@@ -5,6 +5,7 @@
 #include "QEI.h"
 #include "Menu.h"
 #include "Sensor.h"
+#include "Motor.h"
 
 C12832 lcd(D11, D13, D12, D7, D10);
 Menu menu(lcd);
@@ -14,6 +15,9 @@ InterruptIn buttonUp(A2), buttonDown(A3), buttonFire(D4);
 BufferedSerial hm10(PA_11, PA_12, 9600), pc(USBTX, USBRX, 9600);
 LED redLED(D5);
 QEI encL(PC_2, PC_3, NC, 512), encR(PB_14, PB_13, NC, 512);
+Motor leftMotor(PC_8, PC_12, 0.005f, PB_1, false);
+Motor rightMotor(PC_6, PC_10, 0.005f, PB_15, true);
+Motors motors(leftMotor, rightMotor);
 SamplingSensor sensor1(PC_3, 3.3, PC_11, 10);
 SamplingSensor sensor2(PC_2, 3.3, PD_2, 10);
 SamplingSensor sensor3(PC_5, 3.3, PA_14, 10);
@@ -32,6 +36,9 @@ void runMotorsTest() {
     while (!menu.exitRequested()) {
         leftSpeed = leftHand.getCurrentSampleNorm();  // get pot value ranging from 0 to 1
         rightSpeed = rightHand.getCurrentSampleNorm();  // get pot value ranging from 0 to 1
+
+        leftMotor.setSpeed(leftSpeed);
+        rightMotor.setSpeed(rightSpeed);
 
         lcd.locate(0,10);
         lcd.printf("leftSpeed: %02f", leftSpeed);
@@ -71,7 +78,7 @@ void runEncodersTest() {
         prevPulseL = encL.getPulses();
         prevPulseR = encR.getPulses();
                 
-        thread_sleep_for(100);
+        thread_sleep_for(SampleTime*1000);
 
         currPulseL = encL.getPulses();
         currPulseR = encR.getPulses();
@@ -111,39 +118,6 @@ void runEncodersTest() {
     }
 }
 
-void runTextLocater() {
-    char buf[32] = {0};
-    uint32_t num = 0;
-    int x = 0, y = 0, pre_x = 0, pre_y = 0;
-
-    while (!menu.exitRequested()) {
-        if (hm10.readable()) {
-            num = hm10.read(buf, sizeof(buf));
-            lcd.locate(x,y);
-            lcd.write(buf, num);
-        }
-
-        x = leftHand.getCurrentSampleNorm() * 128.9;
-        y = rightHand.getCurrentSampleNorm() * 22.9;
-
-        if ((pre_x != x) || (pre_y != y)) {
-
-            lcd.cls();
-            lcd.locate(0,0);
-            lcd.printf("%03d, %02d", x, y);
-
-            lcd.locate(x,y);
-            lcd.write(buf, num);
-        }
-
-        pre_x = leftHand.getCurrentSampleNorm() * 128.9;
-        pre_y = rightHand.getCurrentSampleNorm() * 30.9;
-
-        thread_sleep_for(100);
-    }
-
-}
-
 void runSensorsTest() {
     while (!menu.exitRequested()) {
         // lcd.locate(0,0);
@@ -166,11 +140,10 @@ int main() {
     buttonFire.rise(&onButtonFire);
 
     // add more tests here
-    menu.addMenuItem("Motors Test", runMotorsTest);
-    menu.addMenuItem("Bluetooth Test", runBluetoothTest);
-    menu.addMenuItem("Encoders Test", runEncodersTest);
-    menu.addMenuItem("Sensors Test", runSensorsTest);
-    menu.addMenuItem("Text Locater", runTextLocater);
+    menu.addMenuItem("Motors Test (TD1.1)", runMotorsTest);
+    menu.addMenuItem("Bluetooth Test (TD2.6)", runBluetoothTest);
+    menu.addMenuItem("Encoders Test (TD1.3)", runEncodersTest);
+    menu.addMenuItem("Sensors Test (TD2.2)", runSensorsTest);
 
     menu.run();
 }
