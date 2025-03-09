@@ -144,7 +144,7 @@ void runSquareTest() {
     const int targetPulsesTurnAround=620;
     bool flag = true;
 
-    while (!menu.exitRequested()) {
+    while (true) {
         for (int i = 0; i < 4; i++) {
             motors.goStraight(speed,targetPulsesStraight);
             thread_sleep_for(100);
@@ -163,6 +163,7 @@ void runSquareTest() {
                 thread_sleep_for(100);
             }
         }
+        motors.setSpeed(0);
         break;
     }
 }

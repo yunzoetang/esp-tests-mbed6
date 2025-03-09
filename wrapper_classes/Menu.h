@@ -1,6 +1,7 @@
 #include "mbed.h"
 #include "C12832.h"
 #include <vector>
+#include <csetjmp>
 
 #ifndef MENU_H
 #define MENU_H
@@ -14,6 +15,8 @@ class Menu
         bool option_selected = false;
         bool redraw_menu = true;
         bool exit_requested = false;
+        jmp_buf exitPoint;
+        Ticker exitChecker;
 
     public:
         Menu(C12832 &lcd)
@@ -79,7 +82,9 @@ class Menu
 
         void runOption() {
             lcd.cls();
+            exitChecker.attach(&Menu::skipOption, 0.05);
             menu[selected_option].second();
+            if (setjmp(exitPoint)) {}
             redraw_menu = true;
             exit_requested = false;
             option_selected = false;
@@ -87,6 +92,12 @@ class Menu
             lcd.locate(0,0);
             lcd.printf("Returning to menu...");
             thread_sleep_for(1000);
+        }
+
+        void skipOption() {
+            if (exit_requested) {
+                longjump(exitPoint, 1);
+            }
         }
 
         bool const exitRequested() { return exit_requested; }
