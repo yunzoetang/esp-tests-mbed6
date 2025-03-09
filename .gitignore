@@ -1,0 +1,9 @@
+BUILD
+.mbed
+compile_commands.json
+.clangd
+.cache
+mbed-os
+wrapper-classes-mbed6
+c12832_mbed6
+qei_mbed6
