@@ -144,28 +144,25 @@ void runSquareTest() {
     const int targetPulsesTurnAround=620;
     bool flag = true;
 
-    while (true) {
-        for (int i = 0; i < 4; i++) {
-            motors.goStraight(speed,targetPulsesStraight);
-            thread_sleep_for(100);
-            if (i < 3) { 
-                motors.turnRight(speed, targetPulsesTurnRight);
-            }
+    for (int i = 0; i < 4; i++) {
+        motors.goStraight(speed,targetPulsesStraight);
+        thread_sleep_for(100);
+        if (i < 3) { 
+            motors.turnRight(speed, targetPulsesTurnRight);
         }
-        thread_sleep_for(300);
-        motors.turnAround(speed, targetPulsesTurnAround);
-        thread_sleep_for(200);
-        for (int i = 0; i < 4; i++) {
-            motors.goStraight(speed,targetPulsesStraight);
-            thread_sleep_for(100);
-            if (i < 3 ){
-                motors.turnLeft(speed, targetPulsesTurnLeft);
-                thread_sleep_for(100);
-            }
-        }
-        motors.setSpeed(0);
-        break;
     }
+    thread_sleep_for(300);
+    motors.turnAround(speed, targetPulsesTurnAround);
+    thread_sleep_for(200);
+    for (int i = 0; i < 4; i++) {
+        motors.goStraight(speed,targetPulsesStraight);
+        thread_sleep_for(100);
+        if (i < 3) {
+            motors.turnLeft(speed, targetPulsesTurnLeft);
+            thread_sleep_for(100);
+        }
+    }
+    motors.setSpeed(0);
 }
 
 int main() {
@@ -178,7 +175,7 @@ int main() {
     // add more tests here
     menu.addMenuItem("Motors Test (TD1.1)", runMotorsTest);
     menu.addMenuItem("Encoders Test (TD1.3)", runEncodersTest);
-    menu.addMenuItem("Square Test (TD1.6", runSquareTest);
+    menu.addMenuItem("Square Test (TD1.6)", runSquareTest);
     menu.addMenuItem("Sensors Test (TD2.2)", runSensorsTest);
     menu.addMenuItem("Bluetooth Test (TD2.6)", runBluetoothTest);
 
