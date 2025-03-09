@@ -1,11 +1,12 @@
 #include "mbed.h"
 #include "C12832.h"
-#include "Potentiometer.h"
-#include "LED.h"
 #include "QEI.h"
+
+#include "LED.h"
 #include "Menu.h"
-#include "Sensor.h"
 #include "Motor.h"
+#include "Potentiometer.h"
+#include "Sensor.h"
 
 C12832 lcd(D11, D13, D12, D7, D10);
 Menu menu(lcd);
@@ -15,9 +16,10 @@ InterruptIn buttonUp(A2), buttonDown(A3), buttonFire(D4);
 BufferedSerial hm10(PA_11, PA_12, 9600), pc(USBTX, USBRX, 9600);
 LED redLED(D5);
 QEI encL(PC_2, PC_3, NC, 512), encR(PB_14, PB_13, NC, 512);
+DigitalOut enableMotors(PA_13);
 Motor leftMotor(PC_8, PC_12, 0.005f, PB_1, false);
 Motor rightMotor(PC_6, PC_10, 0.005f, PB_15, true);
-Motors motors(leftMotor, rightMotor);
+Motors motors(leftMotor, rightMotor, encL, encR);
 SamplingSensor sensor1(PC_3, 3.3, PC_11, 10);
 SamplingSensor sensor2(PC_2, 3.3, PD_2, 10);
 SamplingSensor sensor3(PC_5, 3.3, PA_14, 10);
@@ -32,7 +34,6 @@ void onButtonFire() { menu.select(); }
 // define tests here
 void runMotorsTest() {
     float leftSpeed = 0, rightSpeed = 0;
-
     while (!menu.exitRequested()) {
         leftSpeed = leftHand.getCurrentSampleNorm();  // get pot value ranging from 0 to 1
         rightSpeed = rightHand.getCurrentSampleNorm();  // get pot value ranging from 0 to 1
@@ -41,10 +42,10 @@ void runMotorsTest() {
         rightMotor.setSpeed(rightSpeed);
 
         lcd.locate(0,10);
-        lcd.printf("leftSpeed: %02f", leftSpeed);
+        lcd.printf("leftSpeed: %.2f", leftSpeed);
 
         lcd.locate(0,20);
-        lcd.printf("rightSpeed: %02f", rightSpeed);
+        lcd.printf("rightSpeed: %.2f", rightSpeed);
 
         thread_sleep_for(100);
     }
@@ -134,16 +135,51 @@ void runSensorsTest() {
     }
 }
 
+void runSquareTest() {
+    float SampleTime = 0.1;
+    float speed = 0.25;
+    const int targetPulsesStraight = 700;
+    const int targetPulsesTurnRight=570;
+    const int targetPulsesTurnLeft=550;
+    const int targetPulsesTurnAround=620;
+    bool flag = true;
+
+    while (!menu.exitRequested()) {
+        for (int i = 0; i < 4; i++) {
+            motors.goStraight(speed,targetPulsesStraight);
+            thread_sleep_for(100);
+            if (i < 3) { 
+                motors.turnRight(speed, targetPulsesTurnRight);
+            }
+        }
+        thread_sleep_for(300);
+        motors.turnAround(speed, targetPulsesTurnAround);
+        thread_sleep_for(200);
+        for (int i = 0; i < 4; i++) {
+            motors.goStraight(speed,targetPulsesStraight);
+            thread_sleep_for(100);
+            if (i < 3 ){
+                motors.turnLeft(speed, targetPulsesTurnLeft);
+                thread_sleep_for(100);
+            }
+        }
+        break;
+    }
+}
+
 int main() {
     buttonUp.rise(&onButtonUp);
     buttonDown.rise(&onButtonDown);
     buttonFire.rise(&onButtonFire);
 
+    enableMotors.write(1);
+
     // add more tests here
     menu.addMenuItem("Motors Test (TD1.1)", runMotorsTest);
-    menu.addMenuItem("Bluetooth Test (TD2.6)", runBluetoothTest);
     menu.addMenuItem("Encoders Test (TD1.3)", runEncodersTest);
+    menu.addMenuItem("Square Test (TD1.6", runSquareTest);
     menu.addMenuItem("Sensors Test (TD2.2)", runSensorsTest);
+    menu.addMenuItem("Bluetooth Test (TD2.6)", runBluetoothTest);
 
     menu.run();
 }
