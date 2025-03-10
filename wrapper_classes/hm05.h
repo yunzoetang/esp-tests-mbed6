@@ -15,4 +15,5 @@ void runHM05Test() {
             uint32_t num = hm10.read(buf, sizeof(buf));
             lcd.write(buf, num);
         }
+    }
 }
