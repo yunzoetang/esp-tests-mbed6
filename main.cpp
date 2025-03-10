@@ -1,9 +1,9 @@
 #include "mbed.h"
 #include "C12832.h"
 #include "QEI.h"
+#include "Menu.h"
 
 #include "LED.h"
-#include "Menu.h"
 #include "Motor.h"
 #include "Potentiometer.h"
 #include "Sensor.h"
@@ -15,11 +15,13 @@ SamplingPotentiometer rightHand(A1, 3.3, 20);
 InterruptIn buttonUp(A2), buttonDown(A3), buttonFire(D4);
 BufferedSerial hm10(PA_11, PA_12, 9600), pc(USBTX, USBRX, 9600);
 LED redLED(D5);
+
 QEI encL(PC_2, PC_3, NC, 512), encR(PB_14, PB_13, NC, 512);
 DigitalOut enableMotors(PA_13);
 Motor leftMotor(PC_8, PC_12, 0.005f, PB_1, false);
 Motor rightMotor(PC_6, PC_10, 0.005f, PB_15, true);
 Motors motors(leftMotor, rightMotor, encL, encR);
+
 SamplingSensor sensor1(PC_3, 3.3, PC_11, 10);
 SamplingSensor sensor2(PC_2, 3.3, PD_2, 10);
 SamplingSensor sensor3(PC_5, 3.3, PA_14, 10);
