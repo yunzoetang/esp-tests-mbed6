@@ -81,6 +81,7 @@ class Menu
         void runOption() {
             lcd.cls();
             menu[selected_option].second();
+            exit_requested = false;
             redraw_menu = true;
             option_selected = false;
             lcd.cls();
