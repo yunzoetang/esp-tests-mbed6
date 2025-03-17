@@ -1,0 +1,25 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define PULSES_PER_REV 512
+#define SAMPLING_PERIOD 0.1f
+#define DISTANCE_CONSTANT 20.9049f
+
+#define ENABLE_PIN PA_13
+#define MOTOR_PERIOD 0.005f
+
+#define LEFT_PWM PC_8
+#define LEFT_BIPOLAR PC_12
+#define LEFT_DIRECTION PB_1
+#define LEFT_CHANNEL_A PC_2
+#define LEFT_CHANNEL_B PC_3
+
+#define RIGHT_PWM PC_6
+#define RIGHT_BIPOLAR PC_10
+#define RIGHT_DIRECTION PB_15
+#define RIGHT_CHANNEL_A PB_14
+#define RIGHT_CHANNEL_B PB_13
+
+
+
+#endif
