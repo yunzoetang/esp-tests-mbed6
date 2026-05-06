@@ -1,6 +1,11 @@
 # Tests for the STM32-based autonomous buggy
 
-This repository contains the code for the program with all of the tests used for the project. 
+This repository contains the code for the program with all of the tests used for the project.
+
+| Main Menu | Example test | Test with error |
+| --------- | ------------ | --------------- |
+| ![](./assets/main-menu.gif) | ![](./assets/motor-test.gif) | ![](./assets/test-error.gif) |
+| Pressing up/down navigates the list | Testing potentiometer values and motor speed (not connected) | An example of a faulty test, which returns to the main menu |
 
 ## Related links 
 
