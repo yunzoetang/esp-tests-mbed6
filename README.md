@@ -4,7 +4,7 @@ This repository contains the code for the program with all of the tests used for
 
 | Main Menu | Example test | Test with error |
 | --------- | ------------ | --------------- |
-| ![](./assets/main-menu.gif) | ![](./assets/motor-test.gif) | ![](./assets/test-error.gif) |
+| ![](./assets/main-menu-zoomed.gif) | ![](./assets/motor-test-zoomed.gif) | ![](./assets/test-error-zoomed.gif) |
 | Pressing up/down navigates the list | Testing potentiometer values and motor speed (not connected) | An example of a faulty test, which returns to the main menu |
 
 ## Related links 
